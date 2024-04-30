@@ -45,10 +45,39 @@ export const http = <T>(options: UniApp.RequestOptions) => {
   // 返回一个promise
   return new Promise<Data<T>>((resolve, reject) => {
     uni.request({
+      // 作用是将 options 对象中的所有属性和值，都拷贝到新的对象中去。拷贝到 uni.request 方法的参数对象中去
       ...options,
-      // 成功就返回数据
+      // 响应成功
       success(res) {
-        resolve(res.data as Data<T>)
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          // 状态码在 200 到 300 之间，才认为是成功的
+          resolve(res.data as Data<T>)
+        } else if (res.statusCode === 400) {
+          // 状态码为 401，表示 token 失效，清理用户信息，需要重新登录
+          // 清理用户信息
+          const memberStore = useMemberStore()
+          memberStore.clearProfile()
+          // 跳转到登录页面
+          uni.navigateTo({ url: '/pages/login/login' })
+          // 标记失败, 以便进行错误处理
+          reject(res)
+        } else {
+          // 其它情况, 根据后端轻提示
+          uni.showToast({
+            icon: 'none',
+            // 没有就返回请求错误
+            title: (res.data as Data<T>).msg || '请求错误',
+          })
+        }
+      },
+      // 响应失败
+      fail(err) {
+        uni.showToast({
+          icon: 'none',
+          // 没有就返回请求错误
+          title: '网络错误',
+        })
+        reject(err)
       },
     })
   })
