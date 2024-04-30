@@ -33,3 +33,23 @@ const httpInterceptor = {
 uni.addInterceptor('request', httpInterceptor)
 // 拦截uploadFile请求
 uni.addInterceptor('uploadFile', httpInterceptor)
+
+interface Data<T> {
+  code: string
+  msg: string
+  result: T
+}
+
+// 支持泛型
+export const http = <T>(options: UniApp.RequestOptions) => {
+  // 返回一个promise
+  return new Promise<Data<T>>((resolve, reject) => {
+    uni.request({
+      ...options,
+      // 成功就返回数据
+      success(res) {
+        resolve(res.data as Data<T>)
+      },
+    })
+  })
+}
