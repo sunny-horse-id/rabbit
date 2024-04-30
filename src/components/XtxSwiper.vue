@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { BannerItem } from '@/types/home'
 
 const activeIndex = ref(0)
 // 当滑动时触发
@@ -8,35 +9,21 @@ const onChange = (ev: any) => {
   // !非空断言，主观认为不会为空
   activeIndex.value = ev.detail!.current
 }
+// 利用props 获取数据
+defineProps<{
+  list: BannerItem[]
+}>()
 </script>
 
 <template>
   <view class="carousel">
     <swiper :circular="true" :autoplay="false" :interval="3000" @change="onChange">
-      <swiper-item>
+      <swiper-item v-for="(item, index) in list" :key="item.id">
         <navigator url="/pages/index/index" hover-class="none" class="navigator">
           <image
             mode="aspectFill"
             class="image"
-            src="https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/uploads/slider_1.jpg"
-          ></image>
-        </navigator>
-      </swiper-item>
-      <swiper-item>
-        <navigator url="/pages/index/index" hover-class="none" class="navigator">
-          <image
-            mode="aspectFill"
-            class="image"
-            src="https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/uploads/slider_2.jpg"
-          ></image>
-        </navigator>
-      </swiper-item>
-      <swiper-item>
-        <navigator url="/pages/index/index" hover-class="none" class="navigator">
-          <image
-            mode="aspectFill"
-            class="image"
-            src="https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/uploads/slider_3.jpg"
+            :src="item.imgUrl"
           ></image>
         </navigator>
       </swiper-item>
@@ -44,8 +31,8 @@ const onChange = (ev: any) => {
     <!-- 指示点 -->
     <view class="indicator">
       <text
-        v-for="(item, index) in 3"
-        :key="item"
+        v-for="(item, index) in list"
+        :key="item.id"
         class="dot"
         :class="{ active: index === activeIndex }"
       ></text>
@@ -58,6 +45,7 @@ const onChange = (ev: any) => {
   display: block;
   height: 280rpx;
 }
+
 /* 轮播图 */
 .carousel {
   height: 100%;
@@ -65,6 +53,7 @@ const onChange = (ev: any) => {
   overflow: hidden;
   transform: translateY(0);
   background-color: #efefef;
+
   .indicator {
     position: absolute;
     left: 0;
@@ -72,6 +61,7 @@ const onChange = (ev: any) => {
     bottom: 16rpx;
     display: flex;
     justify-content: center;
+
     .dot {
       width: 30rpx;
       height: 6rpx;
@@ -79,10 +69,12 @@ const onChange = (ev: any) => {
       border-radius: 6rpx;
       background-color: rgba(255, 255, 255, 0.4);
     }
+
     .active {
       background-color: #fff;
     }
   }
+
   .navigator,
   .image {
     width: 100%;
