@@ -44,12 +44,35 @@ const guessRef = ref<XtxGuessInstance>()
 const onScrollToLower = () => {
   guessRef.value?.getMore()
 }
+
+// 自定义下拉刷新触发
+const isTriggered = ref(false)
+
+// 自定义下拉刷新触发
+const onRefreshRefresh = async () => {
+  // 开始动画
+  isTriggered.value = true
+  // 加上await，等待数据加载完毕,再结束动画
+  // await getHomeBannerData()
+  // await getHomeCategoryData()
+  // await getHomeHotData()
+  // 调优，优化性能，同时请求
+  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData()])
+  // 结束动画
+  isTriggered.value = false
+}
 </script>
 
 <template>
   <CustomNavbar />
   <!--  滚动容器-->
-  <scroll-view @scrolltolower="onScrollToLower" class="scroll-view" scroll-y>
+  <!--  refresher-enabled开启下拉刷新-->
+  <scroll-view
+    refresher-enabled
+    @refresherrefresh="onRefreshRefresh"
+    :refresher-triggered="isTriggered"
+    @scrolltolower="onScrollToLower"
+    class="scroll-view" scroll-y>
     <!--  传送数组，轮播图-->
     <XtxSwiper :list="bannerList" />
     <!--  分类面板-->
