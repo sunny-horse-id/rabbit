@@ -2,12 +2,25 @@
 import { onMounted, ref } from 'vue'
 import { getHomeGoodsGuessLikeAPI } from '@/services/home'
 import type { GuessItem } from '@/types/home'
+import type { PageParams } from '@/types/global'
+
+// 分页参数,冒号后面指定类型
+// 通过Required<T>可以强制要求T中的所有属性都是必填的，使得累加不报错
+const pageParams: Required<PageParams> = {
+  page: 1,
+  pageSize: 10,
+}
 
 // 获取猜你喜欢的数据
 const guessList = ref<GuessItem[]>([])
 const getHomeGoodsGuessLikeData = async () => {
-  const res = await getHomeGoodsGuessLikeAPI()
-  guessList.value = res.result.items
+  const res = await getHomeGoodsGuessLikeAPI(pageParams)
+  // guessList.value = res.result.items
+  // 数组追加
+  // ...res.result.items 是 ES6 中的扩展运算符，它可以将一个数组展开为多个参数
+  guessList.value.push(...res.result.items)
+  // 页码累加
+  pageParams.page++
 }
 
 // 组件挂载完成时，请求数据
