@@ -23,11 +23,21 @@ export const getHomeCategoryAPI = () => {
 }
 
 /**
- * 获取首页分类数据
+ * 获取首页热门数据
  */
 export const getHomeHotAPI = () => {
   return http<HotItem[]>({
     method: 'GET',
     url: '/home/hot/mutli',
+  })
+}
+
+/**
+ * 猜你喜欢-小程序
+ */
+export const getHomeGoodsGuessLikeAPI = () => {
+  return http({
+    method: 'GET',
+    url: '/home/goods/guessLike',
   })
 }
