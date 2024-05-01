@@ -14,6 +14,12 @@ const getHomeGoodsGuessLikeData = async () => {
 onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
+
+// 暴露方法
+defineExpose({
+  // 起个别名getMore，让父组件调用
+  getMore: getHomeGoodsGuessLikeData,
+})
 </script>
 
 <template>
