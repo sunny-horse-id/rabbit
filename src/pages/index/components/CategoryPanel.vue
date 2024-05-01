@@ -1,5 +1,9 @@
 <script setup lang="ts">
-//
+import type { CategoryItem } from '@/types/home'
+// 利用props 获取数据
+defineProps<{
+  list: CategoryItem[]
+}>()
 </script>
 
 <template>
@@ -8,14 +12,14 @@
       class="category-item"
       hover-class="none"
       url="/pages/index/index"
-      v-for="item in 10"
-      :key="item"
+      v-for="item in list"
+      :key="item.id"
     >
       <image
         class="icon"
-        src="https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/nav_icon_1.png"
+        :src="item.icon"
       ></image>
-      <text class="text">居家</text>
+      <text class="text">{{ item.name }}</text>
     </navigator>
   </view>
 </template>
@@ -41,6 +45,7 @@
       width: 100rpx;
       height: 100rpx;
     }
+
     .text {
       font-size: 26rpx;
       color: #666;

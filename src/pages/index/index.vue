@@ -3,7 +3,7 @@ import CustomNavbar from './components/CustomNavbar.vue'
 import { getHomeBannerAPI, getHomeCategoryAPI } from '@/services/home'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
-import type { BannerItem } from '@/types/home'
+import type { BannerItem, CategoryItem } from '@/types/home'
 import CategoryPanel from '@/pages/index/components/CategoryPanel.vue'
 
 // 获取首页轮播图数据
@@ -14,7 +14,7 @@ const getHomeBannerData = async () => {
 }
 
 // 获取首页分类数据
-const categoryList = ref([])
+const categoryList = ref<CategoryItem[]>([])
 const getHomeCategoryData = async () => {
   const res = await getHomeCategoryAPI()
   categoryList.value = res.result
@@ -32,7 +32,7 @@ onLoad(() => {
   <!--  传送数组-->
   <XtxSwiper :list="bannerList" />
   <!--  分类面板-->
-  <CategoryPanel />
+  <CategoryPanel :list="categoryList" />
 </template>
 
 <style lang="scss">
