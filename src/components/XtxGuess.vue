@@ -13,14 +13,25 @@ const pageParams: Required<PageParams> = {
 
 // 获取猜你喜欢的数据
 const guessList = ref<GuessItem[]>([])
+// 已结束的标记
+const finished = ref(false)
 const getHomeGoodsGuessLikeData = async () => {
+  // 如果已结束，直接返回，不再调用
+  if (finished.value) {
+    return uni.showToast({ title: '没有更多了', icon: 'none' })
+  }
   const res = await getHomeGoodsGuessLikeAPI(pageParams)
   // guessList.value = res.result.items
   // 数组追加
   // ...res.result.items 是 ES6 中的扩展运算符，它可以将一个数组展开为多个参数
   guessList.value.push(...res.result.items)
-  // 页码累加
-  pageParams.page++
+  // 性能优化
+  if (pageParams.page < res.result.pages) {
+    // 页码累加
+    pageParams.page++
+  } else {
+    finished.value = true
+  }
 }
 
 // 组件挂载完成时，请求数据
@@ -59,7 +70,9 @@ defineExpose({
       </view>
     </navigator>
   </view>
-  <view class="loading-text"> 正在加载...</view>
+  <view class="loading-text">
+    {{ finished ? '没有更多了' : '加载中...' }}
+  </view>
 </template>
 
 <style lang="scss">
