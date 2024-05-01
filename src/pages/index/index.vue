@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import CustomNavbar from './components/CustomNavbar.vue'
-import { getHomeBannerAPI, getHomeCategoryAPI } from '@/services/home'
+import { getHomeBannerAPI, getHomeCategoryAPI, getHomeHotAPI } from '@/services/home'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
-import type { BannerItem, CategoryItem } from '@/types/home'
+import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import CategoryPanel from '@/pages/index/components/CategoryPanel.vue'
+import HotPanel from '@/pages/index/components/HotPanel.vue'
 
 // 获取首页轮播图数据
 const bannerList = ref<BannerItem[]>([])
@@ -20,10 +21,18 @@ const getHomeCategoryData = async () => {
   categoryList.value = res.result
 }
 
+// 获取首页热门推荐数据
+const hotList = ref<HotItem[]>([])
+const getHomeHotData = async () => {
+  const res = await getHomeHotAPI()
+  hotList.value = res.result
+}
+
 // 页面加载时执行
 onLoad(() => {
   getHomeBannerData()
   getHomeCategoryData()
+  getHomeHotData()
 })
 </script>
 
@@ -33,6 +42,8 @@ onLoad(() => {
   <XtxSwiper :list="bannerList" />
   <!--  分类面板-->
   <CategoryPanel :list="categoryList" />
+  <!--  热门推荐-->
+  <HotPanel :list="hotList" />
 </template>
 
 <style lang="scss">
