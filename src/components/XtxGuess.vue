@@ -34,6 +34,13 @@ const getHomeGoodsGuessLikeData = async () => {
   }
 }
 
+// 重置数据，下拉刷新时供父组件使用
+const resetData = () => {
+  pageParams.page = 1
+  guessList.value = []
+  finished.value = false
+}
+
 // 组件挂载完成时，请求数据
 onMounted(() => {
   getHomeGoodsGuessLikeData()
@@ -41,6 +48,7 @@ onMounted(() => {
 
 // 暴露方法
 defineExpose({
+  resetData,
   // 起个别名getMore，让父组件调用
   getMore: getHomeGoodsGuessLikeData,
 })

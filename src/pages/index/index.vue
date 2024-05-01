@@ -56,8 +56,10 @@ const onRefreshRefresh = async () => {
   // await getHomeBannerData()
   // await getHomeCategoryData()
   // await getHomeHotData()
+  // 重置数据
+  guessRef.value?.resetData()
   // 调优，优化性能，同时请求
-  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData()])
+  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData(), guessRef.value?.getMore()])
   // 结束动画
   isTriggered.value = false
 }
