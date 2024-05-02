@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onLoad } from '@dcloudio/uni-app'
 import { postLoginWxMinAPI, postLoginWxMinSimpleAPI } from '@/services/login'
+import { useMemberStore } from '@/stores'
+import type { LoginResult } from '@/types/member'
 
 // 获取登录凭证
 let code = ''
@@ -19,12 +21,29 @@ const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (even) => {
     encryptedData,
     iv,
   })
+  loginSuccess(res.result)
 }
 
 // 模拟登录（开发测试）
 const onGetphonenumberSimple = async () => {
   const res = await postLoginWxMinSimpleAPI('19189970856')
-  uni.showToast({ icon: 'none', title: '模拟登录成功' })
+  // uni.showToast({ icon: 'none', title: '模拟登录成功' })
+  loginSuccess(res.result)
+}
+
+// 保存信息函数的封装
+const loginSuccess = (res: LoginResult) => {
+  // 保存信息
+  const member = useMemberStore()
+  member.setProfile(res)
+  // 成功提升
+  uni.showToast({ icon: 'success', title: '模拟登录成功' })
+  // 页面跳转,navigateT只能跳转到普通页面,switchTab才能跳转到底部TabBar页面(并关闭所有非底部TabBar页面)
+  setTimeout(() => {
+    uni.switchTab({
+      url: '/pages/my/my',
+    })
+  }, 500)
 }
 </script>
 
