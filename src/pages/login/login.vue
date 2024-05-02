@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onLoad } from '@dcloudio/uni-app'
-import { postLoginWxMinAPI } from '@/services/login'
+import { postLoginWxMinAPI, postLoginWxMinSimpleAPI } from '@/services/login'
 
 // 获取登录凭证
 let code = ''
@@ -9,7 +9,7 @@ onLoad(async () => {
   code = res.code
 })
 
-// 获取手机号
+// 获取手机号,并登录(企业开发者)
 const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (even) => {
   // 排除非空
   const encryptedData = even.detail.encryptedData!
@@ -19,6 +19,12 @@ const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (even) => {
     encryptedData,
     iv,
   })
+}
+
+// 模拟登录（开发测试）
+const onGetphonenumberSimple = async () => {
+  const res = await postLoginWxMinSimpleAPI('19189970856')
+  uni.showToast({ icon: 'none', title: '模拟登录成功' })
 }
 </script>
 
@@ -46,7 +52,7 @@ const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (even) => {
         </view>
         <view class="options">
           <!-- 通用模拟登录 -->
-          <button>
+          <button @tap="onGetphonenumberSimple">
             <text class="icon icon-phone">模拟快捷登录</text>
           </button>
         </view>
@@ -71,6 +77,7 @@ page {
 .logo {
   flex: 1;
   text-align: center;
+
   image {
     width: 220rpx;
     height: 220rpx;
@@ -103,6 +110,7 @@ page {
     font-size: 28rpx;
     border-radius: 72rpx;
     color: #fff;
+
     .icon {
       font-size: 40rpx;
       margin-right: 6rpx;
@@ -120,6 +128,7 @@ page {
   .extra {
     flex: 1;
     padding: 70rpx 70rpx 0;
+
     .caption {
       width: 440rpx;
       line-height: 1;
@@ -127,6 +136,7 @@ page {
       font-size: 26rpx;
       color: #999;
       position: relative;
+
       text {
         transform: translate(-40%);
         background-color: #fff;
@@ -141,6 +151,7 @@ page {
       justify-content: center;
       align-items: center;
       margin-top: 70rpx;
+
       button {
         padding: 0;
         background-color: transparent;
@@ -166,6 +177,7 @@ page {
         border-radius: 50%;
       }
     }
+
     .icon-weixin::before {
       border-color: #06c05f;
       color: #06c05f;
