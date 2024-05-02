@@ -14,7 +14,7 @@ const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (even) => {
   // 排除非空
   const encryptedData = even.detail.encryptedData!
   const iv = even.detail.iv!
-  await postLoginWxMinAPI({
+  const res = await postLoginWxMinAPI({
     code,
     encryptedData,
     iv,
