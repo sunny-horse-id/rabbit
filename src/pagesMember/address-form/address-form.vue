@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { postMemberAddressAPI } from '@/services/address'
 
 // 表单数据
 const form = ref({
@@ -18,8 +19,33 @@ const query = defineProps<{
   id?: string
 }>()
 
+// 收集所在地区
+const onReginChange: UniHelper.RegionPickerOnChange = (e) => {
+  // 前端
+  form.value.fullLocation = e.detail.value.join(' ')
+  // 后端
+  const [provinceCode, cityCode, countyCode] = e.detail.code!
+  // 实现对象的合并，合并到form.value
+  Object.assign(form.value, { provinceCode, cityCode, countyCode })
+}
+
+// 默认地址
+const onSwitchChange: UniHelper.SwitchOnChange = (e) => {
+  form.value.isDefault = e.detail.value ? 1 : 0
+}
+
+// 提交表单
+const onSubmit = async () => {
+  await postMemberAddressAPI(form.value)
+  // 成功提升
+  uni.showToast({ title: '保存成功', icon: 'success' })
+  setTimeout(() => {
+    uni.navigateBack()
+  }, 500)
+}
+
 // 动态设置标题
-uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址'})
+uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址' })
 </script>
 
 <template>
@@ -28,26 +54,26 @@ uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址'})
       <!-- 表单内容 -->
       <view class="form-item">
         <text class="label">收货人</text>
-        <input class="input" placeholder="请填写收货人姓名" value="" />
+        <input class="input" placeholder="请填写收货人姓名" v-model="form.receiver" />
       </view>
       <view class="form-item">
         <text class="label">手机号码</text>
-        <input class="input" placeholder="请填写收货人手机号码" value="" />
+        <input class="input" placeholder="请填写收货人手机号码" v-model="form.contact" />
       </view>
       <view class="form-item">
         <text class="label">所在地区</text>
-        <picker class="picker" mode="region" value="">
-          <view v-if="false">广东省 广州市 天河区</view>
+        <picker @change="onReginChange" class="picker" mode="region" :value="form.fullLocation.split(' ')">
+          <view v-if="form.fullLocation">{{ form.fullLocation }}</view>
           <view v-else class="placeholder">请选择省/市/区(县)</view>
         </picker>
       </view>
       <view class="form-item">
         <text class="label">详细地址</text>
-        <input class="input" placeholder="街道、楼牌号等信息" value="" />
+        <input class="input" placeholder="街道、楼牌号等信息" v-model="form.address" value="" />
       </view>
       <view class="form-item">
         <label class="label">设为默认地址</label>
-        <switch class="switch" color="#27ba9b" :checked="true" />
+        <switch @change="onSwitchChange" class="switch" color="#27ba9b" :checked="true" />
       </view>
     </form>
   </view>
