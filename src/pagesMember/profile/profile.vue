@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getMemberProfileAPI } from '@/services/profile'
+import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
 import { ref } from 'vue'
 import type { ProfileDetail } from '@/types/member'
 import { onLoad } from '@dcloudio/uni-app'
@@ -7,7 +7,8 @@ import { onLoad } from '@dcloudio/uni-app'
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
 // 获取用户信息
-const profile = ref<ProfileDetail>()
+// v-model先读取再绑定因此需要设置初始值，因此做修改时要提供初始值
+const profile = ref<ProfileDetail>({} as ProfileDetail)
 const getMemberProfileData = async () => {
   const res = await getMemberProfileAPI()
   profile.value = res.result
@@ -49,6 +50,16 @@ const onAvatarChange = () => {
   })
 }
 
+// 提交表单
+const onSubmit = () => {
+  putMemberProfileAPI({
+    nickname: profile.value!.nickname,
+    gender: profile.value!.gender,
+    birthday: profile.value!.birthday,
+  })
+}
+
+// 页面加载时获取数据
 onLoad(() => {
   getMemberProfileData()
 })
@@ -78,7 +89,7 @@ onLoad(() => {
         </view>
         <view class="form-item">
           <text class="label">昵称</text>
-          <input class="input" type="text" placeholder="请填写昵称" :value="profile?.nickname" />
+          <input class="input" type="text" placeholder="请填写昵称" v-model="profile!.nickname" />
         </view>
         <view class="form-item">
           <text class="label">性别</text>
@@ -119,7 +130,7 @@ onLoad(() => {
         </view>
       </view>
       <!-- 提交按钮 -->
-      <button class="form-button">保 存</button>
+      <button @tap="onSubmit" class="form-button">保 存</button>
     </view>
   </view>
 </template>
