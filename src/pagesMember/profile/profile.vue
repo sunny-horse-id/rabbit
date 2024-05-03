@@ -61,6 +61,9 @@ const onSubmit = () => {
     nickname,
     gender,
     birthday,
+    provinceCode: fullLocationCode[0],
+    cityCode: fullLocationCode[1],
+    countyCode: fullLocationCode[2],
   })
   memberStore.profile!.nickname = profile.value!.nickname
   uni.showToast({
@@ -80,8 +83,16 @@ const onGenderChange: UniHelper.RadioGroupOnChange = (even) => {
 
 // 生日选择修改
 const onBirthdayChange: UniHelper.DatePickerOnChange = (even) => {
-  // 修改生日
   profile.value!.birthday = even.detail.value
+}
+
+// 地区选择修改
+let fullLocationCode: [string, string, string] = ['', '', '']
+const onFullLocationChange: UniHelper.RegionPickerOnChange = (even) => {
+  // 前端修改地区
+  profile.value!.fullLocation = even.detail.value.join(' ')
+  // 提交给后端用的
+  fullLocationCode = even.detail.code!
 }
 
 // 页面加载时获取数据
@@ -145,7 +156,8 @@ onLoad(() => {
         </view>
         <view class="form-item">
           <text class="label">城市</text>
-          <picker class="picker" mode="region" :value="profile?.fullLocation?.split(' ')">
+          <picker @change="onFullLocationChange" class="picker" mode="region"
+                  :value="profile?.fullLocation?.split(' ')">
             <view v-if="profile.fullLocation">{{ profile.fullLocation }}</view>
             <view class="placeholder" v-else>请选择城市</view>
           </picker>
