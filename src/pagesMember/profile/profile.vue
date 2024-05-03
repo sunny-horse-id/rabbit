@@ -3,6 +3,7 @@ import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
 import { ref } from 'vue'
 import type { ProfileDetail } from '@/types/member'
 import { onLoad } from '@dcloudio/uni-app'
+import { useMemberStore } from '@/stores'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
@@ -13,6 +14,7 @@ const getMemberProfileData = async () => {
   const res = await getMemberProfileAPI()
   profile.value = res.result
 }
+const memberStore = useMemberStore()
 
 // 修改头像功能的实现
 const onAvatarChange = () => {
@@ -34,6 +36,8 @@ const onAvatarChange = () => {
           if (result.statusCode === 200) {
             const avatar = JSON.parse(result.data).result.avatar
             profile.value!.avatar = avatar
+            // Store的更新
+            memberStore.profile!.avatar = avatar
             uni.showToast({
               title: '修改头像成功',
               icon: 'success',
@@ -54,9 +58,15 @@ const onAvatarChange = () => {
 const onSubmit = () => {
   putMemberProfileAPI({
     nickname: profile.value!.nickname,
-    gender: profile.value!.gender,
-    birthday: profile.value!.birthday,
   })
+  memberStore.profile!.nickname = profile.value!.nickname
+  uni.showToast({
+    title: '修改成功',
+    icon: 'success',
+  })
+  setTimeout(() => {
+    uni.navigateBack()
+  }, 500)
 }
 
 // 页面加载时获取数据
