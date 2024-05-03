@@ -7,8 +7,8 @@ import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import CategoryPanel from '@/pages/index/components/CategoryPanel.vue'
 import HotPanel from '@/pages/index/components/HotPanel.vue'
 import type XtxGuess from '@/components/XtxGuess.vue'
-import type { XtxGuessInstance } from '@/components/component'
 import PageSkeleton from '@/pages/index/components/PageSkeleton.vue'
+import { useGuessList } from '@/composables'
 
 // 获取首页轮播图数据
 const bannerList = ref<BannerItem[]>([])
@@ -41,13 +41,8 @@ onLoad(async () => {
   isLoading.value = false
 })
 
-// 获取猜你喜欢组件的实例
-const guessRef = ref<XtxGuessInstance>()
-
-// 滚动触底时触发
-const onScrollToLower = () => {
-  guessRef.value?.getMore()
-}
+// 获取才能喜欢组件
+const { guessRef, onScrolltolower } = useGuessList()
 
 // 自定义下拉刷新触发
 const isTriggered = ref(false)
@@ -77,7 +72,7 @@ const onRefreshRefresh = async () => {
     refresher-enabled
     @refresherrefresh="onRefreshRefresh"
     :refresher-triggered="isTriggered"
-    @scrolltolower="onScrollToLower"
+    @scrolltolower="onScrolltolower"
     class="scroll-view" scroll-y>
     <!--    骨架屏-->
     <PageSkeleton v-if="isLoading" />
