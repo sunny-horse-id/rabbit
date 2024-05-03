@@ -81,7 +81,7 @@
   "preloadRule": {
     "pages/my/my": {
       "network": "all",
-      "pages": ["pagesMember"]
+      "packages": ["pagesMember"]
     }
   },
   "globalStyle": {
