@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
 import { ref } from 'vue'
-import type { ProfileDetail } from '@/types/member'
+import type { Gender, ProfileDetail } from '@/types/member'
 import { onLoad } from '@dcloudio/uni-app'
 import { useMemberStore } from '@/stores'
 // 获取屏幕边界到安全区域距离
@@ -58,6 +58,7 @@ const onAvatarChange = () => {
 const onSubmit = () => {
   putMemberProfileAPI({
     nickname: profile.value!.nickname,
+    gender: profile.value!.gender,
   })
   memberStore.profile!.nickname = profile.value!.nickname
   uni.showToast({
@@ -67,6 +68,11 @@ const onSubmit = () => {
   setTimeout(() => {
     uni.navigateBack()
   }, 500)
+}
+
+const onGenderChange: UniHelper.RadioGroupOnChange = (even) => {
+  // 修改性别,as Gender进行断言，因为规定为男或女，所以将字符串断言为Gender类型
+  profile.value!.gender = even.detail.value as Gender
 }
 
 // 页面加载时获取数据
@@ -103,7 +109,7 @@ onLoad(() => {
         </view>
         <view class="form-item">
           <text class="label">性别</text>
-          <radio-group>
+          <radio-group @change="onGenderChange">
             <label class="radio">
               <radio value="男" color="#27ba9b" :checked="profile?.gender === '男'" />
               男
