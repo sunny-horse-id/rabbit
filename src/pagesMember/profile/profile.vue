@@ -2,14 +2,56 @@
 import { getMemberProfileAPI } from '@/services/profile'
 import { ref } from 'vue'
 import type { ProfileDetail } from '@/types/member'
+import { onLoad } from '@dcloudio/uni-app'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
+// 获取用户信息
 const profile = ref<ProfileDetail>()
-const getMemberProfileData = async() => {
+const getMemberProfileData = async () => {
   const res = await getMemberProfileAPI()
   profile.value = res.result
 }
+
+// 修改头像功能的实现
+const onAvatarChange = () => {
+  // 调用拍照和选择图片的api
+  uni.chooseMedia({
+    // 文件个数
+    count: 1,
+    // 文件的类型
+    mediaType: ['image'],
+    success: (res) => {
+      // 获取图片的临时路径
+      const { tempFilePath } = res.tempFiles[0]
+      // 文件上传
+      uni.uploadFile({
+        filePath: tempFilePath,
+        name: 'file',
+        url: '/member/profile/avatar',
+        success(result) {
+          if (result.statusCode === 200) {
+            const avatar = JSON.parse(result.data).result.avatar
+            profile.value!.avatar = avatar
+            uni.showToast({
+              title: '修改头像成功',
+              icon: 'success',
+            })
+          } else {
+            uni.showToast({
+              title: '出现错误',
+              icon: 'error',
+            })
+          }
+        },
+      })
+    },
+  })
+}
+
+onLoad(() => {
+  getMemberProfileData()
+})
 </script>
 
 <template>
@@ -21,7 +63,7 @@ const getMemberProfileData = async() => {
     </view>
     <!-- 头像 -->
     <view class="avatar">
-      <view class="avatar-content">
+      <view @tap="onAvatarChange" class="avatar-content">
         <image class="image" :src="profile?.avatar" mode="aspectFill" />
         <text class="text">点击修改头像</text>
       </view>
@@ -195,6 +237,7 @@ page {
     .picker {
       flex: 1;
     }
+
     .placeholder {
       color: #808080;
     }
