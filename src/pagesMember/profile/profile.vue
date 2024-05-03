@@ -56,9 +56,11 @@ const onAvatarChange = () => {
 
 // 提交表单
 const onSubmit = () => {
+  const { nickname, gender, birthday } = profile.value
   putMemberProfileAPI({
-    nickname: profile.value!.nickname,
-    gender: profile.value!.gender,
+    nickname,
+    gender,
+    birthday,
   })
   memberStore.profile!.nickname = profile.value!.nickname
   uni.showToast({
@@ -70,9 +72,16 @@ const onSubmit = () => {
   }, 500)
 }
 
+// 性别选择修改
 const onGenderChange: UniHelper.RadioGroupOnChange = (even) => {
   // 修改性别,as Gender进行断言，因为规定为男或女，所以将字符串断言为Gender类型
   profile.value!.gender = even.detail.value as Gender
+}
+
+// 生日选择修改
+const onBirthdayChange: UniHelper.DatePickerOnChange = (even) => {
+  // 修改生日
+  profile.value!.birthday = even.detail.value
 }
 
 // 页面加载时获取数据
@@ -123,6 +132,7 @@ onLoad(() => {
         <view class="form-item">
           <text class="label">生日</text>
           <picker
+            @change="onBirthdayChange"
             class="picker"
             mode="date"
             start="1900-01-01"
@@ -136,7 +146,7 @@ onLoad(() => {
         <view class="form-item">
           <text class="label">城市</text>
           <picker class="picker" mode="region" :value="profile?.fullLocation?.split(' ')">
-            <view v-if="false">广东省广州市天河区</view>
+            <view v-if="profile.fullLocation">{{ profile.fullLocation }}</view>
             <view class="placeholder" v-else>请选择城市</view>
           </picker>
         </view>
