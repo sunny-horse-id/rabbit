@@ -108,15 +108,14 @@
         {
           "path": "create/create",
           "style": {
-            "navigationBarTitleText": "填写订单",
-            "enablePullDownRefresh": false
+            "navigationBarTitleText": "填写订单"
           }
         },
         {
           "path": "detail/detail",
           "style": {
-            "navigationBarTitleText": "订单详情",
-            "enablePullDownRefresh": false
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "订单详情"
           }
         }
       ]
