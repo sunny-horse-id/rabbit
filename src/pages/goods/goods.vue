@@ -103,8 +103,8 @@ const selectArrText = computed(() => {
 })
 
 // 添加购物车
-const onAddCart = (ev: SkuPopupEvent) => {
-  postMemberCartAPI({skuId: ev._id, count: ev.buy_num})
+const onAddCart = async (ev: SkuPopupEvent) => {
+  await postMemberCartAPI({skuId: ev._id, count: ev.buy_num})
   // 关闭SKU组件
   isShowSKU.value = false
   // 弹出提示
