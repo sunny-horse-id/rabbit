@@ -98,6 +98,8 @@ const gotoPayment = () => {
       icon: 'none',
       title: '请选择要购买的商品',
     })
+  } else {
+    uni.navigateTo({ url: '/pagesOrder/create/create' })
   }
 }
 </script>

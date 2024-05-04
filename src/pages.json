@@ -101,6 +101,18 @@
           }
         }
       ]
+    },
+    {
+      "root": "pagesOrder",
+      "pages": [
+        {
+          "path": "create/create",
+          "style": {
+            "navigationBarTitleText": "填写订单",
+            "enablePullDownRefresh": false
+          }
+        }
+      ]
     }
   ],
   // 分包预加载规则
