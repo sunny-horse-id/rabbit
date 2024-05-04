@@ -6,6 +6,7 @@ import { ref } from 'vue'
 import type { GoodsResult } from '@/types/goods'
 import AddressPanel from '@/pages/goods/components/AddressPanel.vue'
 import ServicePanel from '@/pages/goods/components/ServicePanel.vue'
+import type { SkuPopupLocaldata } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
@@ -15,10 +16,30 @@ const query = defineProps<{
 }>()
 
 // 获取商品详情数据
+// 是否显示SKU
+const isShowSKU = ref(false)
+// 商品信息
+const localdata = ref({} as SkuPopupLocaldata)
 const goods = ref<GoodsResult>()
 const getGoodsByIdData = async () => {
   const res = await getGoodsByIdAPI(query.id)
   goods.value = res.result
+  // SKU组件所需格式
+  localdata.value = {
+    _id: res.result.id,
+    name: res.result.name,
+    goods_thumb: res.result.mainPictures[0],
+    spec_list: res.result.specs.map((v) => ({ name: v.name, list: v.values })),
+    sku_list: res.result.skus.map((v) => ({
+      _id: v.id,
+      goods_id: res.result.id,
+      goods_name: res.result.name,
+      image: v.picture,
+      price: v.price * 100, // 注意：需要乘以 100
+      stock: v.inventory,
+      sku_name_arr: v.specs.map((vv) => vv.valueName),
+    })),
+  }
 }
 
 // 页面加载时
@@ -55,6 +76,8 @@ const openPopup = (name: typeof popupName.value) => {
 </script>
 
 <template>
+  <!--  SKU弹窗组件-->
+  <vk-data-goods-sku-popup v-model="isShowSKU" :localdata="localdata" />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
     <view class="goods">
@@ -88,7 +111,7 @@ const openPopup = (name: typeof popupName.value) => {
 
       <!-- 操作面板 -->
       <view class="action">
-        <view class="item arrow">
+        <view @tap="isShowSKU = true" class="item arrow">
           <text class="label">选择</text>
           <text class="text ellipsis"> 请选择商品规格</text>
         </view>
@@ -182,8 +205,8 @@ const openPopup = (name: typeof popupName.value) => {
     type="bottom"
     background-color="#fff"
   >
-    <AddressPanel v-if="popupName === 'address'" @close="popup?.close()"/>
-    <ServicePanel v-if="popupName === 'service'" @close="popup?.close()"/>
+    <AddressPanel v-if="popupName === 'address'" @close="popup?.close()" />
+    <ServicePanel v-if="popupName === 'service'" @close="popup?.close()" />
   </uni-popup>
 </template>
 
