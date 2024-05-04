@@ -73,7 +73,8 @@ const onDeleteCart = (skuId: string) => {
               <!-- 商品数量 -->
               <view class="count">
                 <text class="text">-</text>
-                <input class="input" type="number" :value="item.count.toString" />
+                <!--                少加了个()-->
+                <input class="input" type="number" :value="item.count.toString()" />
                 <text class="text">+</text>
               </view>
             </view>
