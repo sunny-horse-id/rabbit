@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import { getMemberOrderPreAPI } from '@/services/order'
 import { onLoad } from '@dcloudio/uni-app'
 import type { OrderPreResult } from '@/types/order'
+import type { AddressItem } from '@/types/address'
+import { useAddressStore } from '@/stores/modules/address'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -32,19 +34,24 @@ const getMemberOrderPreData = async () => {
 onLoad(() => {
   getMemberOrderPreData()
 })
+const addressStore = useAddressStore()
+// 得到默认收货地址
+const selectAddress = computed(() => {
+  return addressStore.selectedAddress || orderPre.value?.userAddresses.find(v => v.isDefault)
+})
 </script>
 
 <template>
   <scroll-view scroll-y class="viewport">
     <!-- 收货地址 -->
     <navigator
-      v-if="false"
+      v-if="selectAddress"
       class="shipment"
       hover-class="none"
       url="/pagesMember/address/address?from=order"
     >
-      <view class="user"> 张三 13333333333 </view>
-      <view class="address"> 广东省 广州市 天河区 黑马程序员3 </view>
+      <view class="user"> {{ selectAddress.receiver }} {{ selectAddress.contact }}</view>
+      <view class="address"> {{ selectAddress.fullLocation }} {{ selectAddress.address }}</view>
       <text class="icon icon-right"></text>
     </navigator>
     <navigator
@@ -53,7 +60,7 @@ onLoad(() => {
       hover-class="none"
       url="/pagesMember/address/address?from=order"
     >
-      <view class="address"> 请选择收货地址 </view>
+      <view class="address"> 请选择收货地址</view>
       <text class="icon icon-right"></text>
     </navigator>
 
@@ -104,11 +111,11 @@ onLoad(() => {
     <!-- 支付金额 -->
     <view class="settlement">
       <view class="item">
-        <text class="text">商品总价: </text>
+        <text class="text">商品总价:</text>
         <text class="number symbol">{{ orderPre?.summary.totalPrice.toFixed(2) }}</text>
       </view>
       <view class="item">
-        <text class="text">运费: </text>
+        <text class="text">运费:</text>
         <text class="number symbol">{{ orderPre?.summary.postFee.toFixed(2) }}</text>
       </view>
     </view>
@@ -119,7 +126,7 @@ onLoad(() => {
     <view class="total-pay symbol">
       <text class="number">{{ orderPre?.summary.totalPrice.toFixed(2) }}</text>
     </view>
-    <view class="button" :class="{ disabled: true }"> 提交订单 </view>
+    <view class="button" :class="{ disabled: true }"> 提交订单</view>
   </view>
 </template>
 
@@ -143,8 +150,7 @@ page {
   padding: 30rpx 30rpx 30rpx 84rpx;
   font-size: 26rpx;
   border-radius: 10rpx;
-  background: url(https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/locate.png)
-  20rpx center / 50rpx no-repeat #fff;
+  background: url(https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/locate.png) 20rpx center / 50rpx no-repeat #fff;
   position: relative;
 
   .icon {
