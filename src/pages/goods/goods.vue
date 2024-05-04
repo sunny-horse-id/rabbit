@@ -7,9 +7,11 @@ import type { GoodsResult } from '@/types/goods'
 import AddressPanel from '@/pages/goods/components/AddressPanel.vue'
 import ServicePanel from '@/pages/goods/components/ServicePanel.vue'
 import type {
+  SkuPopupEvent,
   SkuPopupInstanceType,
   SkuPopupLocaldata,
 } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
+import { postMemberCartAPI } from '@/services/cart'
 
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
@@ -99,6 +101,18 @@ const skuPopupRef = ref<SkuPopupInstanceType>()
 const selectArrText = computed(() => {
   return skuPopupRef.value?.selectArr?.join(' ').trim() || '请选择商品规格'
 })
+
+// 添加购物车
+const onAddCart = (ev: SkuPopupEvent) => {
+  postMemberCartAPI({skuId: ev._id, count: ev.buy_num})
+  // 关闭SKU组件
+  isShowSKU.value = false
+  // 弹出提示
+  uni.showToast({
+    icon: 'none',
+    title: '添加购物车成功',
+  })
+}
 </script>
 
 <template>
@@ -109,6 +123,7 @@ const selectArrText = computed(() => {
                               color: '#27BA9B',
                               borderColor: '#27BA9B',
                            }"
+                           @add-cart="onAddCart"
   />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
