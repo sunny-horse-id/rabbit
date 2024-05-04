@@ -136,10 +136,10 @@ uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址' })
         <text class="label">详细地址</text>
         <input class="input" placeholder="街道、楼牌号等信息" v-model="form.address" />
       </uni-forms-item>
-      <view class="form-item">
+      <uni-forms-item class="form-item">
         <label class="label">设为默认地址</label>
-        <switch @change="onSwitchChange" class="switch" color="#27ba9b" :checked="true" />
-      </view>
+        <switch @change="onSwitchChange" class="switch" color="#27ba9b" :checked="form.isDefault === 1" />
+      </uni-forms-item>
     </uni-forms>
   </view>
   <!-- 提交按钮 -->
