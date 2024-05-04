@@ -69,7 +69,7 @@ uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址' })
       </view>
       <view class="form-item">
         <text class="label">详细地址</text>
-        <input class="input" placeholder="街道、楼牌号等信息" v-model="form.address" value="" />
+        <input class="input" placeholder="街道、楼牌号等信息" v-model="form.address" />
       </view>
       <view class="form-item">
         <label class="label">设为默认地址</label>
@@ -78,7 +78,7 @@ uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址' })
     </form>
   </view>
   <!-- 提交按钮 -->
-  <button class="button">保存并使用</button>
+  <button class="button" @tap="onSubmit">保存并使用</button>
 </template>
 
 <style lang="scss">
