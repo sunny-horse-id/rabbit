@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { useMemberStore } from '@/stores'
 import type { CartItem } from '@/types/cart'
-import { ref } from 'vue'
-import { deleteMemberCartAPI, getMemberCartAPI, putMemberCartBySkuIdAPI } from '@/services/cart'
+import { computed, ref } from 'vue'
+import {
+  deleteMemberCartAPI,
+  getMemberCartAPI,
+  putMemberCartBySkuIdAPI,
+  putMemberCartSelectedAPI,
+} from '@/services/cart'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import type {
   InputNumberBox,
@@ -42,6 +47,31 @@ const onDeleteCart = (skuId: string) => {
 const onChangeCount = (ev: InputNumberBoxEvent) => {
   putMemberCartBySkuIdAPI(ev.index, { count: ev.value })
 }
+
+// 修改选中状态-单品的修改
+const onChangeSelected = (item: CartItem) => {
+  // 取反
+  item.selected = !item.selected
+  // 后端
+  putMemberCartBySkuIdAPI(item.skuId, { selected: item.selected })
+}
+
+// 计算全选状态
+const isSelectedAll = computed(() => {
+  return cartList.value.length && cartList.value.every((item) => item.selected)
+})
+
+// 全选修改
+const onChangeSelectedAll = () => {
+  // 获取选中状态
+  const selected = !isSelectedAll.value
+  // 遍历
+  cartList.value.forEach((item) => {
+    item.selected = selected
+  })
+  // 后端
+  putMemberCartSelectedAPI({ selected })
+}
 </script>
 
 <template>
@@ -62,7 +92,7 @@ const onChangeCount = (ev: InputNumberBoxEvent) => {
             <!-- 商品信息 -->
             <view class="goods">
               <!-- 选中状态 -->
-              <text class="checkbox" :class="{ checked: item.selected }"></text>
+              <text @tap="onChangeSelected(item)" class="checkbox" :class="{ checked: item.selected }"></text>
               <navigator
                 :url="`/pages/goods/goods?id=${item.id}`"
                 hover-class="none"
@@ -104,7 +134,7 @@ const onChangeCount = (ev: InputNumberBoxEvent) => {
       </view>
       <!-- 吸底工具栏 -->
       <view class="toolbar">
-        <text class="all" :class="{ checked: true }">全选</text>
+        <text @tap="onChangeSelectedAll" class="all" :class="{ checked: isSelectedAll }">全选</text>
         <text class="text">合计:</text>
         <text class="amount">100</text>
         <view class="button-grounp">
