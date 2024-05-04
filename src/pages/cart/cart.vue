@@ -2,7 +2,7 @@
 import { useMemberStore } from '@/stores'
 import type { CartItem } from '@/types/cart'
 import { ref } from 'vue'
-import { getMemberCartAPI } from '@/services/cart'
+import { deleteMemberCartAPI, getMemberCartAPI } from '@/services/cart'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 // 是否登录
 const memberStore = useMemberStore()
@@ -19,6 +19,20 @@ onShow(() => {
     getMemberCartData()
   }
 })
+
+// 删除功能
+const onDeleteCart = (skuId: string) => {
+  // 二次确认
+  uni.showModal({
+    content: '确定要删除该商品吗？',
+    success: async (res) => {
+      if (res.confirm) {
+        await deleteMemberCartAPI({ ids: [skuId] })
+        getMemberCartData()
+      }
+    },
+  })
+}
 </script>
 
 <template>
@@ -66,7 +80,7 @@ onShow(() => {
             <!-- 右侧删除按钮 -->
             <template #right>
               <view class="cart-swipe-right">
-                <button class="button delete-button">删除</button>
+                <button @tap="onDeleteCart(item.skuId)" class="button delete-button">删除</button>
               </view>
             </template>
           </uni-swipe-action-item>
@@ -86,7 +100,7 @@ onShow(() => {
         <text class="text">合计:</text>
         <text class="amount">100</text>
         <view class="button-grounp">
-          <view class="button payment-button" :class="{ disabled: true }"> 去结算(10) </view>
+          <view class="button payment-button" :class="{ disabled: true }"> 去结算(10)</view>
         </view>
       </view>
     </template>
@@ -285,15 +299,18 @@ onShow(() => {
   align-items: center;
   flex-direction: column;
   height: 60vh;
+
   .image {
     width: 400rpx;
     height: 281rpx;
   }
+
   .text {
     color: #444;
     font-size: 26rpx;
     margin: 20rpx 0;
   }
+
   .button {
     width: 240rpx !important;
     height: 60rpx;
@@ -388,6 +405,7 @@ onShow(() => {
     }
   }
 }
+
 // 底部占位空盒子
 .toolbar-height {
   height: 100rpx;
