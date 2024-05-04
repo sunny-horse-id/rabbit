@@ -40,9 +40,10 @@ const loginSuccess = (res: LoginResult) => {
   uni.showToast({ icon: 'success', title: '模拟登录成功' })
   // 页面跳转,navigateT只能跳转到普通页面,switchTab才能跳转到底部TabBar页面(并关闭所有非底部TabBar页面)
   setTimeout(() => {
-    uni.switchTab({
-      url: '/pages/my/my',
-    })
+    // uni.switchTab({
+    //   url: '/pages/my/my',
+    // })
+    uni.navigateBack()
   }, 500)
 }
 </script>
