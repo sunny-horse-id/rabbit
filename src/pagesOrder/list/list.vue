@@ -12,15 +12,22 @@ const orderTabs = ref([
   { orderState: 4, title: '待评价' },
 ])
 
+// 获取页面参数
+const query = defineProps<{
+  type: string,
+}>()
+
 // 高亮下标
-const activeIndex = ref(0)
+const activeIndex = ref(orderTabs.value.findIndex((v) => v.orderState === Number(query.type)))
 </script>
 
 <template>
   <view class="viewport">
     <!-- tabs -->
     <view class="tabs">
-      <text @tap="activeIndex = index" class="item" v-for="(item, index) in orderTabs" :key="item.orderState"> {{ item.title }} </text>
+      <text @tap="activeIndex = index" class="item" v-for="(item, index) in orderTabs" :key="item.orderState">
+        {{ item.title }}
+      </text>
       <!-- 游标 -->
       <view class="cursor" :style="{ left: activeIndex * 20 + '%' }"></view>
     </view>
@@ -62,7 +69,10 @@ const activeIndex = ref(0)
             <view class="payment">
               <text class="quantity">共5件商品</text>
               <text>实付</text>
-              <text class="amount"> <text class="symbol">¥</text>99</text>
+              <text class="amount">
+                <text class="symbol">¥</text>
+                99
+              </text>
             </view>
             <!-- 订单操作按钮 -->
             <view class="action">
