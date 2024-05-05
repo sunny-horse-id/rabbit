@@ -4,6 +4,7 @@ import type { OrderItem, OrderListParams } from '@/types/order'
 import { getMemberOrderAPI } from '@/services/order'
 import { onMounted, ref } from 'vue'
 import { OrderState, orderStateList } from '../../../services/constant'
+import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/services/pay'
 
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
@@ -30,6 +31,23 @@ const getMemberOrderData = async () => {
 onMounted(() => {
   getMemberOrderData()
 })
+
+// 订单支付
+const onOrderPay = async (id: string) => {
+  // 开发环境
+  if (import.meta.env.DEV) {
+    await getPayMockAPI({ orderId: id })
+  } else {
+    // 正式环境的支付
+    const res = await getPayWxPayMiniPayAPI({ orderId: id })
+    wx.requestPayment(res.result)
+  }
+  // 成功提示
+  uni.showToast({ title: '支付成功' })
+  // 更新状态
+  const order = orderList.value.find(value => value.id === id)
+  order!.orderState = OrderState.DaiFaHuo
+}
 </script>
 
 <template>
@@ -75,7 +93,7 @@ onMounted(() => {
       <view class="action">
         <!-- 待付款状态：显示去支付按钮 -->
         <template v-if="item.orderState === OrderState.DaiFuKuan">
-          <view class="button primary">去支付</view>
+          <view class="button primary" @tap="onOrderPay(item.id)">去支付</view>
         </template>
         <template v-else>
           <navigator
