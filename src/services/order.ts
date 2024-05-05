@@ -1,4 +1,10 @@
-import type { OrderCreateParams, OrderLogisticResult, OrderPreResult, OrderResult } from '@/types/order'
+import type {
+  OrderCreateParams, OrderListParams,
+  OrderListResult,
+  OrderLogisticResult,
+  OrderPreResult,
+  OrderResult,
+} from '@/types/order'
 import { http } from '@/utils/http'
 /**
  * 填写订单-获取预付订单
@@ -92,6 +98,18 @@ export const getMemberOrderLogisticsByIdAPI = (id: string) => {
 export const deleteMemberOrderAPI = (data: { ids: string[] }) => {
   return http({
     method: 'DELETE',
+    url: `/member/order`,
+    data,
+  })
+}
+
+/**
+ * 获取订单列表
+ * @param data orderState 订单状态
+ */
+export const getMemberOrderAPI = (data: OrderListParams) => {
+  return http<OrderListResult>({
+    method: 'GET',
     url: `/member/order`,
     data,
   })
