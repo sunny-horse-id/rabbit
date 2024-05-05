@@ -2,7 +2,7 @@
 import { useGuessList } from '@/composables'
 import { ref } from 'vue'
 import { onLoad, onReady } from '@dcloudio/uni-app'
-import { getMemberOrderByIdAPI, getMemberOrderConsignmentByIdAPI } from '@/services/order'
+import { getMemberOrderByIdAPI, getMemberOrderConsignmentByIdAPI, putMemberOrderReceiptByIdAPI } from '@/services/order'
 import type { OrderResult } from '@/types/order'
 import { OrderState, orderStateList } from '@/services/constant'
 import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/services/pay'
@@ -106,10 +106,25 @@ const onOrderSend = async () => {
   // 打包时不会打包开发环境的代码内容
   if (isDev) {
     await getMemberOrderConsignmentByIdAPI(query.id)
-    uni.showToast({ title: '发货成功', icon: 'success'})
+    uni.showToast({ title: '发货成功', icon: 'success' })
     // 更改订单状态
     order.value!.orderState = OrderState.DaiShouHuo
   }
+}
+
+// 收货
+const onOrderConfirm = async () => {
+  uni.showModal({
+    content: '是否确认收货？',
+    success: async (res) => {
+      if (res.confirm) {
+        await putMemberOrderReceiptByIdAPI(query.id)
+        uni.showToast({ title: '收货成功', icon: 'success' })
+        // 更改订单状态
+        order.value!.orderState = OrderState.DaiPingJia
+      }
+    },
+  })
 }
 </script>
 
@@ -247,7 +262,7 @@ const onOrderSend = async () => {
       <view class="toolbar-height" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }"></view>
       <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
         <!-- 待付款状态:展示支付按钮 -->
-        <template v-if="true">
+        <template v-if="order?.orderState === OrderState.DaiFuKuan">
           <view class="button primary"> 去支付</view>
           <view class="button" @tap="popup?.open?.()"> 取消订单</view>
         </template>
@@ -261,7 +276,9 @@ const onOrderSend = async () => {
             再次购买
           </navigator>
           <!-- 待收货状态: 展示确认收货 -->
-          <view class="button primary"> 确认收货</view>
+          <view @tap="onOrderConfirm" v-if="order?.orderState === OrderState.DaiShouHuo" class="button primary">
+            确认收货
+          </view>
           <!-- 待评价状态: 展示去评价 -->
           <view class="button"> 去评价</view>
           <!-- 待评价/已完成/已取消 状态: 展示删除订单 -->
